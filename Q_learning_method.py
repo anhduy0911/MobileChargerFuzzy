@@ -13,29 +13,70 @@ def q_max_function(q_table, state):
     return np.asarray(temp)
 
 
-def reward_function(network, q_learning, state, alpha=0.1, receive_func=find_receiver):
-    """
-    calculate each part of reward
-    :param network:
-    :param q_learning:
-    :param state:
-    :param receive_func:
-    :return: each part of reward and charging time when mc stand at state
-    """
-    # get charing time, find full path
-    charging_time = get_charging_time(network, q_learning, state, alpha)
-    w, nb_target_alive = get_weight(
-        network, network.mc, q_learning, state, charging_time, receive_func)
-    p = get_charge_per_sec(network, q_learning, state)
-    p_hat = p / np.sum(p)
-    E = np.asarray(
-        [network.node[request["id"]].energy for request in network.mc.list_request])
-    e = np.asarray([request["avg_energy"]
-                    for request in network.mc.list_request])
-    second = nb_target_alive / len(network.target)
-    third = np.sum(w * p_hat)
-    first = np.sum(e * p / E)
-    return first, second, third, charging_time
+# def reward_function(network, q_learning, state, alpha=0.1, receive_func=find_receiver):
+#     """
+#     calculate each part of reward
+#     :param network:
+#     :param q_learning:
+#     :param state:
+#     :param receive_func:
+#     :return: each part of reward and charging time when mc stand at state
+#     """
+#     # get charing time, find full path
+#     charging_time = get_charging_time(network, q_learning, state, alpha)
+#     w, nb_target_alive = get_weight(
+#         network, network.mc, q_learning, state, charging_time, receive_func)
+#     p = get_charge_per_sec(network, q_learning, state)
+#     p_hat = p / np.sum(p)
+#     E = np.asarray(
+#         [network.node[request["id"]].energy for request in network.mc.list_request])
+#     e = np.asarray([request["avg_energy"]
+#                     for request in network.mc.list_request])
+#     second = nb_target_alive / len(network.target)
+#     third = np.sum(w * p_hat)
+#     first = np.sum(e * p / E)
+#     return first, second, third, charging_time
+
+
+def reward_function(network, q_learning, state, penalty=-10, t=0):
+    if state >= len(network.node):
+        dist = distance.euclidean(network.mc.current, para.depot)
+    else:
+        dist = distance.euclidean(network.mc.current, network.node[state].location)
+    distance_factor = math.exp(-dist)
+    dead_nodes = count_future_deadnode(network, state, t)
+    dn_factor = dead_nodes * penalty
+
+    charge_time = get_full_charge_time(network, state)
+    return distance_factor, dn_factor, charge_time
+
+
+def count_future_deadnode(network, state, t):
+    if state >= len(network.node):
+        dist = distance.euclidean(network.mc.current, para.depot)
+    else:
+        dist = distance.euclidean(network.mc.current, network.node[state].location)
+    moving_time = dist / network.mc.velocity
+    charge_time = get_full_charge_time(network, state)
+    finish_time = t + moving_time + charge_time
+
+    dead_node = 0
+    for nd in network.node:
+        if nd.window_time[1] < finish_time:
+            dead_node += 1
+
+    return dead_node
+
+
+def get_full_charge_time(network, state):
+    if state < len(network.node):
+        i_node = network.node[state]
+        p = para.alpha / para.beta ** 2
+        charge_time = int((i_node.energy_max - i_node.energy) / (p - i_node.avg_energy))
+    else:
+        charge_time = int((network.mc.capacity -
+                           network.mc.energy) / network.mc.e_self_charge)
+    return charge_time
 
 
 def init_function(nb_action=81):
@@ -51,12 +92,14 @@ def action_function(nb_action=81):
     return list_action
 
 
-# def action_function(network):
-#     list_action = []
-#     for node in network.node:
-#         list_action.append(node.location)
-#     list_action.append(para.depot)
-#     return list_action
+def action_function_cao(list_node):
+    list_action = []
+    for node in list_node:
+        list_action.append(node.location)
+
+    list_action.append(para.depot)
+    # print(f'list action: {list_action}')
+    return list_action
 
 
 def get_weight(net, mc, q_learning, action_id, charging_time, receive_func=find_receiver):

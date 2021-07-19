@@ -5,7 +5,7 @@ import pandas as pd
 from ast import literal_eval
 from MobileCharger import MobileCharger
 from Q__Learning import Q_learning
-from DQN import DQN
+from DQN_Cao2020 import DQNCAO
 from Inma import Inma
 import csv
 from scipy.stats import sem, t
@@ -27,6 +27,16 @@ def calculate_state_size_dqn(network):
     return len(network.node) * 2
 
 
+def calculate_state_size_dqn_cao(network):
+    # energy of mc
+    # for each sensor
+    # distance bw mc and sensor
+    # energy of sensor
+    # window time
+    # wether the window time is open
+    return 1 + len(network.node) * 5
+
+
 df = pd.read_csv(args.filedata)
 for index in range(5):
     chooser_alpha = open("log/{}.csv".format(args.type), "w")
@@ -34,7 +44,7 @@ for index in range(5):
     result = csv.DictWriter(chooser_alpha, fieldnames=["nb run", "lifetime"])
     result.writeheader()
     life_time = []
-    for nb_run in range(5):
+    for nb_run in range(1):
         random.seed(nb_run)
 
         node_pos = list(literal_eval(df.node_pos[index]))
@@ -57,14 +67,17 @@ for index in range(5):
         inma = Inma()
 
         # calculate state_size for DQN
-        state_size = calculate_state_size_dqn(net)
-        deep_qlearning = DQN(state_size=state_size,
-                             file_name_model="model.h5", network=net)
+        # state_size = calculate_state_size_dqn(net)
+        state_size_cao = calculate_state_size_dqn_cao(net)
+        # deep_qlearning = DQN(state_size=state_size,
+        #                      file_name_model="model.h5", network=net)
+        dqn_cao = DQNCAO(state_size=state_size_cao,
+                         file_name_model="model.h5", network=net)
         if args.model == "DQN":
             file_name = "log/{}_{}_{}_{}.csv".format(
                 args.model, args.type, index, nb_run)
             temp = net.simulate(optimizer=q_learning,
-                                file_name=file_name, deep_optimizer=deep_qlearning, max_time=args.maxTime)
+                                file_name=file_name, deep_optimizer=dqn_cao, max_time=args.maxTime)
         elif args.model == "Q-learning":
             file_name = "log/{}_{}_{}_{}.csv".format(
                 args.model, args.type, index, nb_run)

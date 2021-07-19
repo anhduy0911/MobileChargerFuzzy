@@ -24,6 +24,19 @@ class Node:
         self.is_active = is_active  # statement of sensor. If sensor dead, state is False
         self.is_request = False
         self.level = 0
+        self.window_time = self.update_window_time(t=0)
+
+    def update_window_time(self, t):
+        if (self.avg_energy == 0):
+            return (-1, -1)
+        if self.energy > self.energy_thresh:
+            start = t + int((self.energy - self.energy_thresh) / self.avg_energy)
+            end = start + int(self.energy / self.avg_energy)
+            return (start, end)
+        else:  # if energy below threshold, modify to make sure the time_window is open
+            start = t
+            end = start + int(self.energy / self.avg_energy)
+            return (start, end)
 
     def set_average_energy(self, func=estimate_average_energy):
         """

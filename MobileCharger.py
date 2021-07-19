@@ -54,7 +54,7 @@ class MobileCharger:
         else:
             self.is_self_charge = False
 
-    def choice_optimizer(self, network, index_optimizer, optimizer=None, deep_optimizer=None,):
+    def choice_optimizer(self, network, index_optimizer, time_stem, optimizer=None, deep_optimizer=None,):
         if index_optimizer == 1:
             print("Q learning update", deep_optimizer.steps_to_update_target_model)
             next_location, charging_time = optimizer.update(network)
@@ -76,29 +76,32 @@ class MobileCharger:
             return next_location, charging_time
         else:
             print("Update with DQN", deep_optimizer.steps_to_update_target_model)
-            next_location, charging_time = deep_optimizer.update(network)
+            next_location, charging_time = deep_optimizer.update(network, time_stem)
             return next_location, charging_time
 
     def get_next_location(self, network, time_stem, optimizer=None, deep_optimizer=None):
         if deep_optimizer is not None:
 
-            list_optimizer = [1, 2]  # 1 - Qlearning; 2-DeepLearning
-            index_optimizer = 1
-            if deep_optimizer.steps_to_update_target_model < 100:
-                index_optimizer = 1
-            else:
-                # update target model
-                # deep_optimizer.target_model = deep_optimizer.model
-                exp_exp_tradeoff = random.uniform(0, 1)
-                if exp_exp_tradeoff > self.epsilon:
-                    index_optimizer = 2
-                else:
-                    index_optimizer = random.choices(
-                        list_optimizer, weights=(50, 50), k=1)[0]
-                if self.epsilon > self.min_epsilon:
-                    self.epsilon *= self.epsilon_decay
+            # list_optimizer = [1, 2]  # 1 - Qlearning; 2-DeepLearning
+            # index_optimizer = 1
+            # if deep_optimizer.steps_to_update_target_model < 100:
+            #     index_optimizer = 1
+            # else:
+            #     # update target model
+            #     # deep_optimizer.target_model = deep_optimizer.model
+            #     exp_exp_tradeoff = random.uniform(0, 1)
+            #     if exp_exp_tradeoff > self.epsilon:
+            #         index_optimizer = 2
+            #     else:
+            #         index_optimizer = random.choices(
+            #             list_optimizer, weights=(50, 50), k=1)[0]
+            #     if self.epsilon > self.min_epsilon:
+            #         self.epsilon *= self.epsilon_decay
+
+            # always update with dqn_cao
+            index_optimizer = 2
             next_location, charging_time = self.choice_optimizer(
-                network, index_optimizer, optimizer, deep_optimizer)
+                network, index_optimizer, time_stem, optimizer, deep_optimizer)
         else:
             next_location, charging_time = optimizer.update(network=network)
 

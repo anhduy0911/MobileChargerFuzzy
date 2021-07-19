@@ -42,6 +42,7 @@ class Network:
         state = self.communicate()
         request_id = []
         for index, node in enumerate(self.node):
+            node.update_window_time(t)
             if node.energy < node.energy_thresh:
                 node.request(mc=self.mc, t=t)
                 request_id.append(index)
@@ -56,7 +57,7 @@ class Network:
 
         if optimizer:
             self.mc.run(network=self, time_stem=t, net=self,
-                        optimizer=optimizer,  deep_optimizer=deep_optimizer)
+                        optimizer=optimizer, deep_optimizer=deep_optimizer)
         return state
 
     def create_point_to_plot(self):
@@ -78,7 +79,7 @@ class Network:
         while self.count_package() < len(self.target):
             t = t + 1
 
-            if (t-1) % 100 == 0:
+            if (t - 1) % 100 == 0:
                 print(t, self.mc.current,
                       self.node[self.find_min_node()].energy, self.node[self.find_min_node()].location)
                 # plt.clf()
@@ -114,7 +115,7 @@ class Network:
         while t <= max_time:
             t += 1
             # optimizer.steps_to_update_target_model = t
-            if (t-1) % 100 == 0:
+            if (t - 1) % 100 == 0:
                 print(t, self.mc.current,
                       self.node[self.find_min_node()].energy, self.node[self.find_min_node()].location)
             state = self.run_per_second(t, optimizer, deep_optimizer)
@@ -171,4 +172,4 @@ class Network:
         print("top 10 node nearest MC")
         for i in indexs:
             print("The node {} with energy is {}. the MC location is {}. Distance is {}".format(
-                self.node[i].location, self.node[i].energy,  self.mc.current, distances[i]))
+                self.node[i].location, self.node[i].energy, self.mc.current, distances[i]))
