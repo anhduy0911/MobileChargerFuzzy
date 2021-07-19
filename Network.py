@@ -107,10 +107,12 @@ class Network:
     def simulate_max_time(self, optimizer, deep_optimizer, max_time=10000, file_name="log/information_log.csv"):
         information_log = open(file_name, "w")
         writer = csv.DictWriter(information_log, fieldnames=[
-                                "time", "nb dead", "nb package"])
+                                "time", "nb dead", "nb package", "untrack target"])
         writer.writeheader()
         nb_dead = 0
         nb_package = len(self.target)
+        untrack_target = 0
+
         t = 0
         while t <= max_time:
             t += 1
@@ -121,13 +123,15 @@ class Network:
             state = self.run_per_second(t, optimizer, deep_optimizer)
             current_dead = self.count_dead_node()
             current_package = self.count_package()
-            if current_dead != nb_dead or current_package != nb_package:
+            current_untrack_target = len(self.target) - current_package
+            if current_dead != nb_dead or current_package != nb_package or current_untrack_target != untrack_target:
                 nb_dead = current_dead
                 nb_package = current_package
+                untrack_target = current_untrack_target
                 writer.writerow(
-                    {"time": t, "nb dead": nb_dead, "nb package": nb_package})
-                print("time: {}, nb dead: {}, nb package:{}".format(
-                    t, nb_dead, nb_package))
+                    {"time": t, "nb dead": nb_dead, "nb package": nb_package, "untrack target": untrack_target})
+                print("time: {}, nb dead: {}, nb package:{}, untrack target:{}".format(
+                    t, nb_dead, nb_package, untrack_target))
         print(t, self.mc.current, self.node[self.find_min_node()].energy)
         information_log.close()
         return t
