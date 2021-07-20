@@ -87,7 +87,7 @@ def action_function(nb_action=81):
     list_action = []
     for i in range(int(math.sqrt(nb_action))):
         for j in range(int(math.sqrt(nb_action))):
-            list_action.append((100 * (i + 1), 100 * (j + 1)))
+            list_action.append((200 * (i + 1), 200 * (j + 1)))
     list_action.append(para.depot)
     return list_action
 

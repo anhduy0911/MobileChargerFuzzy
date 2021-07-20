@@ -101,7 +101,7 @@ class DQNCAO:
 
     def choose_next_state(self, network, state):
         # next_state = np.argmax(self.q_table[self.state])
-        if network.mc.energy < 10:
+        if network.mc.energy < 0.1:
             return len(self.q_value) - 1
         act_values = self.model.predict(state)
         q_value = act_values[0]
