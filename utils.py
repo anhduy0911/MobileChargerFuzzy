@@ -1,6 +1,7 @@
 from math import dist
 import numpy as np
 from scipy.spatial import distance
+import pandas as pd
 
 
 def updateMemories(q_learning, deep_qlearning):
@@ -52,3 +53,41 @@ def _build_input_state(network, t):
     list_state.extend(tw_opens)
 
     return np.array(list_state)
+
+
+def prepare_data():
+    topo_data = pd.read_csv('data/topo.csv', header=None)
+
+    data = topo_data[6].to_numpy()
+    import random
+    target = random.sample(range(data.shape[0]), k=150)
+
+    topo_string = ','.join([x for x in data])
+    target_string = ', '.join([str(x) for x in target])
+
+    old_dat = pd.read_csv('data/formal_data.csv', header=0)
+    row = old_dat.iloc[0].copy()
+    new_data = pd.DataFrame(columns=old_dat.columns)
+    # new_data.append({
+    #     'No. Data': 1,
+    #     'target': target_string,
+    #     'node_pos': topo_string,
+    #     'energy': old_dat.energy,
+    #     'commRange': 15,
+    #     'freq': old_dat.freq,
+    #     'charge_pos': old_dat.charge_pos,
+    #     'chargeRange': old_dat.chargeRange,
+    #     'velocity': old_dat.velocity,
+    #     'base': old_dat.base,
+    #     'depot': old_dat.velocity,
+    # })
+    row['commRange'] = 15
+    row['target'] = target_string
+    row['node_pos'] = topo_string
+    new_data = new_data.append(row.to_dict(), ignore_index=True)
+
+    new_data.to_csv('data/formal_data_3.csv')
+
+
+if __name__ == '__main__':
+    prepare_data()

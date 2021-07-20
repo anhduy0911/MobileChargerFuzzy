@@ -128,6 +128,7 @@ class Network:
                 nb_dead = current_dead
                 nb_package = current_package
                 untrack_target = current_untrack_target
+
                 writer.writerow(
                     {"time": t, "nb dead": nb_dead, "nb package": nb_package, "untrack target": untrack_target})
                 print("time: {}, nb dead: {}, nb package:{}, untrack target:{}".format(

@@ -221,6 +221,8 @@ class DQNCAO:
                              network.mc.energy) / network.mc.e_self_charge
         else:
             charging_time = self.charging_time[next_action_id]
+            print(
+                f'Charging for node {next_action_id}, remaining energy: {network.node[next_action_id].energy}, charging time: {charging_time}')
         # if charging_time > 8000:
         #     charging_time *= 0.65
 
