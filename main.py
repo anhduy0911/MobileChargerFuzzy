@@ -37,6 +37,10 @@ def calculate_state_size_dqn_cao(network):
     return 1 + len(network.node) * 5
 
 
+import time
+
+start_time = time.time()
+
 df = pd.read_csv(args.filedata)
 for index in range(1):
     chooser_alpha = open("log/{}.csv".format(args.type), "w")
@@ -56,7 +60,7 @@ for index in range(1):
             energy_max = df.energy[index]
             prob = df.freq[index]
             node = Node(location=location, com_ran=com_ran, energy=energy, energy_max=energy_max, id=i,
-                        energy_thresh=0.05 * energy, prob=prob)
+                        energy_thresh=0.1 * energy_max, prob=prob)
             list_node.append(node)
         mc = MobileCharger(energy=df.E_mc[index], capacity=df.E_max[index], e_move=df.e_move[index],
                            e_self_charge=df.e_mc[index], velocity=df.velocity[index])
@@ -102,3 +106,5 @@ for index in range(1):
     f.write("nb run: {}; lifetime: {}".format(np.mean(life_time), h))
     print(np.mean(life_time))
     print(h)
+
+print(f'Execution time: {time.time() - start_time}')

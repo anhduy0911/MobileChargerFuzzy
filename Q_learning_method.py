@@ -83,11 +83,11 @@ def init_function(nb_action=81):
     return np.zeros((nb_action + 1, nb_action + 1), dtype=float)
 
 
-def action_function(nb_action=81):
+def action_function(nb_action=225):
     list_action = []
     for i in range(int(math.sqrt(nb_action))):
         for j in range(int(math.sqrt(nb_action))):
-            list_action.append((200 * (i + 1), 200 * (j + 1)))
+            list_action.append((13 * (i + 1), 13 * (j + 1)))
     list_action.append(para.depot)
     return list_action
 

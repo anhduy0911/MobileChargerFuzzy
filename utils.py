@@ -1,4 +1,3 @@
-from math import dist
 import numpy as np
 from scipy.spatial import distance
 import pandas as pd
