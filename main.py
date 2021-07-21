@@ -56,11 +56,11 @@ for index in range(1):
         for i in range(len(node_pos)):
             location = node_pos[i]
             com_ran = df.commRange[index]
-            energy = df.energy[index] / 5
+            energy = df.energy[index] / 20
             energy_max = df.energy[index]
             prob = df.freq[index]
             node = Node(location=location, com_ran=com_ran, energy=energy, energy_max=energy_max, id=i,
-                        energy_thresh=0.1 * energy_max, prob=prob)
+                        energy_thresh=0.02 * energy_max, prob=prob)
             list_node.append(node)
         mc = MobileCharger(energy=df.E_mc[index], capacity=df.E_max[index], e_move=df.e_move[index],
                            e_self_charge=df.e_mc[index], velocity=df.velocity[index])

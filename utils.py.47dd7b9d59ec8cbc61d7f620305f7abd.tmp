@@ -55,8 +55,8 @@ def _build_input_state(network, t):
 
 
 def prepare_data():
-    topo_data = pd.read_csv('data/400node.csv', header=None)
-    print(topo_data.head())
+    topo_data = pd.read_csv('data/300node.csv', header=None)
+
     data = topo_data[6].to_numpy()
     import random
     target = random.sample(range(data.shape[0]), k=250)
@@ -85,7 +85,7 @@ def prepare_data():
     row['node_pos'] = topo_string
     new_data = new_data.append(row.to_dict(), ignore_index=True)
 
-    new_data.to_csv('data/formal_data_5_400.csv')
+    new_data.to_csv('data/formal_data_5_300.csv')
 
 
 if __name__ == '__main__':

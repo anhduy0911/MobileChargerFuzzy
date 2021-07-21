@@ -14,7 +14,6 @@ class Q_learning:
         self.charging_time = [0.0 for _ in self.action_list]
         self.reward = np.asarray([0.0 for _ in self.action_list])
         self.reward_max = [0.0 for _ in self.action_list]
-        self.input_state_dqn = None
         self.reward_dqn = 0
         self.q_value_for_dqn = [0.0 for _ in self.action_list]
 
@@ -22,7 +21,6 @@ class Q_learning:
 
         if not len(network.mc.list_request):
             return self.action_list[self.state], 0.0
-        self.input_state_dqn = _build_input_state(network)
         self.set_reward(reward_func=reward_func, network=network)
 
         self.q_table[self.state] = (1 - alpha) * self.q_table[self.state] + alpha * (

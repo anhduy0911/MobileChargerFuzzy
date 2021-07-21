@@ -119,7 +119,9 @@ class Network:
             # optimizer.steps_to_update_target_model = t
             if (t - 1) % 100 == 0:
                 print(t, self.mc.current,
-                      self.node[self.find_min_node()].energy, self.node[self.find_min_node()].location)
+                      self.node[self.find_min_node()].energy,
+                      self.node[self.find_most_consume_node()].avg_energy,
+                      len(self.mc.list_request))
             state = self.run_per_second(t, optimizer, deep_optimizer)
             current_dead = self.count_dead_node()
             current_package = self.count_package()
@@ -164,6 +166,16 @@ class Network:
             if node.energy < 0:
                 count += 1
         return count
+
+    def find_most_consume_node(self):
+        max_energy = 0
+        max_id = -1
+
+        for node in self.node:
+            if node.avg_energy > max_energy:
+                max_energy = node.avg_energy
+                max_id = node.id
+        return max_id
 
     def count_package(self, count_func=count_package_function):
         count = count_func(self)
