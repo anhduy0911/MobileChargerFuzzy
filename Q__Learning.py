@@ -7,8 +7,8 @@ from utils import _build_input_state
 
 
 class Q_learning:
-    def __init__(self, init_func=init_function, nb_action=81, action_func=action_function, network=None):
-        self.action_list = action_func(nb_action=nb_action)
+    def __init__(self, init_func=init_function, nb_action=81, action_func=action_function, action_list=None, network=None):
+        self.action_list = action_list
         self.q_table = init_func(nb_action=nb_action)
         self.state = nb_action
         self.charging_time = [0.0 for _ in self.action_list]

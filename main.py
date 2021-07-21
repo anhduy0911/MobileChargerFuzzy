@@ -11,6 +11,7 @@ import csv
 from scipy.stats import sem, t
 import numpy as np
 import argparse
+import Parameter as para
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--filedata", help="File name to run data",
@@ -66,8 +67,9 @@ for index in range(1):
                            e_self_charge=df.e_mc[index], velocity=df.velocity[index])
         target = [int(item) for item in df.target[index].split(',')]
         net = Network(list_node=list_node, mc=mc, target=target)
-
-        q_learning = Q_learning(network=net)
+        
+        action_list = node_pos + [para.depot]
+        q_learning = Q_learning(network=net, action_list=action_list)
         inma = Inma()
 
         # calculate state_size for DQN
