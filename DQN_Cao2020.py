@@ -190,7 +190,7 @@ class DQNCAO:
         if(self.steps_to_update_target_model % UPDATE_EVERY == 0):
             self.update_target_model()
 
-    def update(self, network, t, alpha=0.5, gamma=0.5, q_max_func=q_max_function, reward_func=reward_function):
+    def update(self, network, t, alpha=0.5, gamma=0.5, q_max_func=q_max_function, reward_func=reward_function_coc):
         if not len(network.mc.list_request):
             return self.action_list[self.state], 0.0
 
