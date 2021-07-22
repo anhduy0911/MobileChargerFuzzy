@@ -10,7 +10,7 @@ class Q_learning:
     def __init__(self, init_func=init_function, action_func=action_function, action_list=None, network=None):
         self.action_list = action_list
         self.q_table = init_func(nb_action=(len(action_list)-1))
-        self.state = len(action_list)
+        self.state = len(action_list) - 1
         self.charging_time = [0.0 for _ in self.action_list]
         self.reward = np.asarray([0.0 for _ in self.action_list])
         self.reward_max = [0.0 for _ in self.action_list]
