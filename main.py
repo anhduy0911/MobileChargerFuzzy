@@ -88,7 +88,7 @@ for index in range(1):
             file_name = "log/{}_{}_{}_{}.csv".format(
                 args.model, args.type, index, nb_run)
             temp = net.simulate(optimizer=q_learning,
-                                file_name=file_name, deep_optimizer=None, max_time=args.maxTime)
+                                file_name=file_name, deep_optimizer=None, max_time=args.maxTime, write_name='DQN')
         else:
             file_name = "log/{}_{}_{}_{}.csv".format(
                 args.model, args.type, index, nb_run)

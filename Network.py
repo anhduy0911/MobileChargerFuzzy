@@ -104,7 +104,7 @@ class Network:
 
         return t
 
-    def simulate_max_time(self, optimizer, deep_optimizer, max_time=10000, file_name="log/information_log.csv"):
+    def simulate_max_time(self, optimizer, deep_optimizer, max_time=10000, file_name="log/information_log.csv", write_name=None):
         information_log = open(file_name, "w")
         writer = csv.DictWriter(information_log, fieldnames=[
                                 "time", "nb dead", "nb package", "untrack target"])
@@ -113,15 +113,20 @@ class Network:
         nb_package = len(self.target)
         untrack_target = 0
 
+        file_name2 = f'log/{write_name}_fuzzy_log.csv'
+        information_log2 = open(file_name2, "w")
+        writer2 = csv.DictWriter(information_log2, fieldnames=["time", "current mc", "min energy", "most consume", "queue length"])
+        writer2.writeheader()
+
         t = 0
         while t <= max_time:
             t += 1
             # optimizer.steps_to_update_target_model = t
             if (t - 1) % 100 == 0:
-                print(t, self.mc.current,
-                      self.node[self.find_min_node()].energy,
-                      self.node[self.find_most_consume_node()].avg_energy,
-                      len(self.mc.list_request))
+                writer2.writerow({"time": t, "current mc": self.mc.current, 
+                                "min energy": self.node[self.find_min_node()].energy, 
+                                "most consume": self.node[self.find_most_consume_node()].avg_energy,
+                                "queue length": len(self.mc.list_request)})
             state = self.run_per_second(t, optimizer, deep_optimizer)
             current_dead = self.count_dead_node()
             current_package = self.count_package()
@@ -139,10 +144,10 @@ class Network:
         information_log.close()
         return t
 
-    def simulate(self, optimizer, deep_optimizer, max_time=None, file_name="log/energy_log.csv"):
+    def simulate(self, optimizer, deep_optimizer, max_time=None, file_name="log/energy_log.csv", write_name=None):
         if max_time:
             life_time = self.simulate_max_time(
-                optimizer=optimizer, deep_optimizer=deep_optimizer, max_time=max_time, file_name=file_name)
+                optimizer=optimizer, deep_optimizer=deep_optimizer, max_time=max_time, file_name=file_name, write_name=write_name)
         else:
             life_time = self.simulate_lifetime(
                 optimizer=optimizer, deep_optimizer=deep_optimizer, file_name=file_name)
