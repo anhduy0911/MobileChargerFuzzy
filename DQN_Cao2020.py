@@ -165,7 +165,7 @@ class DQNCAO:
     #     self.reward = first + second + third
     #     self.reward_max = list(zip(first, second, third))
 
-    def set_reward(self, t, reward_func=reward_function, network=None):
+    def set_reward(self, t, reward_func=reward_function_coc, network=None):
         # create reward with state
         first = np.asarray([0.0 for _ in self.action_list], dtype=float)
         second = np.asarray([0.0 for _ in self.action_list], dtype=float)

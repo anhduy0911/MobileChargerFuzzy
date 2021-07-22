@@ -13,32 +13,32 @@ def q_max_function(q_table, state):
     return np.asarray(temp)
 
 
-# def reward_function(network, q_learning, state, alpha=0.1, receive_func=find_receiver):
-#     """
-#     calculate each part of reward
-#     :param network:
-#     :param q_learning:
-#     :param state:
-#     :param receive_func:
-#     :return: each part of reward and charging time when mc stand at state
-#     """
-#     # get charing time, find full path
-#     charging_time = get_charging_time(network, q_learning, state, alpha)
-#     w, nb_target_alive = get_weight(
-#         network, network.mc, q_learning, state, charging_time, receive_func)
-#     p = get_charge_per_sec(network, q_learning, state)
-#     p_hat = p / np.sum(p)
-#     E = np.asarray(
-#         [network.node[request["id"]].energy for request in network.mc.list_request])
-#     e = np.asarray([request["avg_energy"]
-#                     for request in network.mc.list_request])
-#     second = nb_target_alive / len(network.target)
-#     third = np.sum(w * p_hat)
-#     first = np.sum(e * p / E)
-#     return first, second, third, charging_time
+def reward_function(network, q_learning, state, alpha=0.1, receive_func=find_receiver):
+    """
+    calculate each part of reward
+    :param network:
+    :param q_learning:
+    :param state:
+    :param receive_func:
+    :return: each part of reward and charging time when mc stand at state
+    """
+    # get charing time, find full path
+    charging_time = get_charging_time(network, q_learning, state, alpha)
+    w, nb_target_alive = get_weight(
+        network, network.mc, q_learning, state, charging_time, receive_func)
+    p = get_charge_per_sec(network, q_learning, state)
+    p_hat = p / np.sum(p)
+    E = np.asarray(
+        [network.node[request["id"]].energy for request in network.mc.list_request])
+    e = np.asarray([request["avg_energy"]
+                    for request in network.mc.list_request])
+    second = nb_target_alive / len(network.target)
+    third = np.sum(w * p_hat)
+    first = np.sum(e * p / E)
+    return first, second, third, charging_time
 
 
-def reward_function(network, q_learning, state, penalty=-10, t=0):
+def reward_function_coc(network, q_learning, state, penalty=-10, t=0):
     if state >= len(network.node):
         dist = distance.euclidean(network.mc.current, para.depot)
     else:
