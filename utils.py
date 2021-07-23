@@ -89,4 +89,10 @@ def prepare_data():
 
 
 if __name__ == '__main__':
-    prepare_data()
+    # prepare_data()
+    import random
+
+    random.seed(9)
+    target = random.sample(range(300), k=300)
+    target_string = ', '.join([str(x) for x in target[:300]])
+    print(target_string)

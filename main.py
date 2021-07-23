@@ -43,7 +43,7 @@ import time
 start_time = time.time()
 
 df = pd.read_csv(args.filedata)
-for index in range(1):
+for index in range(df.shape[0]):
     chooser_alpha = open("log/{}.csv".format(args.type), "w")
     f = open("result.txt", "w+")
     result = csv.DictWriter(chooser_alpha, fieldnames=["nb run", "lifetime"])
@@ -57,7 +57,7 @@ for index in range(1):
         for i in range(len(node_pos)):
             location = node_pos[i]
             com_ran = df.commRange[index]
-            energy = df.energy[index] / 20
+            energy = df.energy[index] / 10
             energy_max = df.energy[index]
             prob = df.freq[index]
             node = Node(location=location, com_ran=com_ran, energy=energy, energy_max=energy_max, id=i,
@@ -88,7 +88,7 @@ for index in range(1):
             file_name = "log/{}_{}_{}_{}.csv".format(
                 args.model, args.type, index, nb_run)
             temp = net.simulate(optimizer=q_learning,
-                                file_name=file_name, deep_optimizer=None, max_time=args.maxTime, write_name='DQN')
+                                file_name=file_name, deep_optimizer=None, max_time=args.maxTime, write_name=args.model)
         else:
             file_name = "log/{}_{}_{}_{}.csv".format(
                 args.model, args.type, index, nb_run)

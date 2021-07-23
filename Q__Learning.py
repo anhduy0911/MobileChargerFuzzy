@@ -21,14 +21,14 @@ class Q_learning:
 
         if not len(network.mc.list_request):
             return self.action_list[self.state], 0.0
-        self.set_reward(reward_func=reward_func, network=network)
+        choosing_ind = self.set_reward(reward_func=reward_func, network=network)
 
         self.q_table[self.state] = (1 - alpha) * self.q_table[self.state] + alpha * (
             self.reward + gamma * self.q_max(q_max_func))
         # update q-value for DQN with state
         self.q_value_for_dqn = self.q_table[self.state]
         # choose action <=> next_state of MC
-        self.choose_next_state(network)
+        self.choose_next_state(network, choose_ind=choosing_ind)
         # calculate reward for next_action with current_state => update memory deep_qlearning
         self.reward_dqn = self.reward[self.state]
         if self.state == len(self.action_list) - 1:
@@ -50,6 +50,7 @@ class Q_learning:
         first = np.asarray([0.0 for _ in self.action_list], dtype=float)
         second = np.asarray([0.0 for _ in self.action_list], dtype=float)
         third = np.asarray([0.0 for _ in self.action_list], dtype=float)
+        choosing_ind = []
         for index, _ in enumerate(self.q_table):
             temp = reward_func(network=network, q_learning=self,
                                state=index, receive_func=find_receiver)
@@ -57,16 +58,24 @@ class Q_learning:
             second[index] = temp[1]
             third[index] = temp[2]
             self.charging_time[index] = temp[3]
+            if temp[3] != 0:
+                choosing_ind.append(index)
+
         first = first / np.sum(first)
         second = second / np.sum(second)
         third = third / np.sum(third)
         self.reward = first + second + third
         self.reward_max = list(zip(first, second, third))
 
-    def choose_next_state(self, network):
+        return choosing_ind
+
+    def choose_next_state(self, network, choose_ind=[]):
         # next_state = np.argmax(self.q_table[self.state])
         if network.mc.energy < 10:
             self.state = len(self.q_table) - 1
+        elif len(choose_ind) != 0:
+            ind = np.argmax(self.q_table[self.state, choose_ind])
+            self.state = choose_ind[ind]
         else:
             self.state = np.argmax(self.q_table[self.state])
             # print(self.reward_max[self.state])
